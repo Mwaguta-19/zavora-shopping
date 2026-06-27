@@ -11,14 +11,26 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import environ
 import os
+import stripe
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+#jwt settings
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -31,9 +43,20 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+STRIPE_PUBLIC_KEY = "pk_test_51TmyuhPsuTc11ljcb0Gcg2z1Fx5jCsOGbsXPPMuGeyxJMYFpQpZ5MNRnq0NBQ621fzlnEwg6nNO9Z45NaHX7qMVM00PS5LSfje"
+STRIPE_SECRET_KEY = "sk_test_51TmyuhPsuTc11ljc39lI32Nw1WsiB8g5L0KV5p1ndL7SGUk6fwiITtGRR1Q1E3tMSSHgTHavYBhFcQ8kceyrVkGu00k0NaxbQc"
+STRIPE_WEBHOOK_SECRET = " whsec_53fcc677b8baff6d0061804c9602d9b73588d221f1aaae99bb1354abc96e33e9"  
+stripe.api_key = STRIPE_SECRET_KEY
+
+
+AUTH_USER_MODEL = "accounts.User"
+
+#Email notifications
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "Jumia Clone <noreply@jumiaclone.com>"
+FRONTEND_URL = "http://localhost:5173"
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +64,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "apps.accounts",
+    "apps.products",
+    "apps.orders",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -114,6 +143,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+#AUTH_USER_MODEL = "users.User"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
