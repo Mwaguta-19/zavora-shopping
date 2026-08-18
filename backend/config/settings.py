@@ -21,8 +21,7 @@ except ImportError:
 
 SECRET_KEY = get_env("SECRET_KEY", "dev-secret-key-change-in-production")
 DEBUG = get_env("DEBUG", "True") == "True"
-ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
+ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL = "accounts.User"
 
 INSTALLED_APPS = [
