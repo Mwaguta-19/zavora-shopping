@@ -41,6 +41,7 @@ class CreatePaymentIntentView(APIView):
         intent = stripe.PaymentIntent.create(
             amount=int(order.total * 100),  # Stripe uses cents
             currency="usd",
+            automatic_payment_methods={"enabled": True},  # ← add this
             metadata={
                 "order_number": order.order_number,
                 "user_id": str(request.user.id),

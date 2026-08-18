@@ -3,11 +3,9 @@ from .models import Category, Product, ProductImage, ProductReview
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField()
-
     class Meta:
         model = Category
-        fields = ["id", "name", "slug", "image", "parent", "children", "is_active"]
+        fields = ["id", "name", "slug", "image", "parent", "is_active"]
 
     def get_children(self, obj):
         if obj.children.exists():
@@ -55,12 +53,12 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    """Full serializer for product detail."""
     images = ProductImageSerializer(many=True, read_only=True)
     reviews = ProductReviewSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(), source="category", write_only=True
+        queryset=Category.objects.all(), source="category", write_only=True,
+        required=False  # ← add this
     )
     discount_percentage = serializers.ReadOnlyField()
     in_stock = serializers.ReadOnlyField()

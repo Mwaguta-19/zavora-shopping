@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from .serializers import (
     ChangePasswordSerializer,
@@ -25,6 +26,10 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        try:
+            send_welcome_email(user)
+        except Exception:
+            pass
         refresh = RefreshToken.for_user(user)
         return Response(
             {
@@ -59,6 +64,7 @@ class LogoutView(APIView):
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:

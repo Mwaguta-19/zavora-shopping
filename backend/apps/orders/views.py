@@ -3,6 +3,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+
+from apps.notifications.emails import send_order_confirmation, send_order_cancelled
 from .models import Address, Cart, CartItem, Order, OrderItem
 from .serializers import (
     AddressSerializer,
@@ -176,6 +178,16 @@ class CheckoutView(APIView):
 
         # Clear cart
         cart.items.all().delete()
+        try:
+            send_order_confirmation(order)
+        except Exception:
+            pass  # don't fail the order if email fails
+
+        return Response(
+            OrderSerializer(order).data,
+            status=status.HTTP_201_CREATED,
+        )
+        
 
         return Response(
             OrderSerializer(order).data,
@@ -218,6 +230,12 @@ class CancelOrderView(APIView):
             )
         order.status = Order.StatusChoices.CANCELLED
         order.save()
+        try:
+            send_order_cancelled(order)
+        except Exception:
+            pass
+
+        return Response({"detail": "Order cancelled successfully."})
 
         # Restore stock
         for item in order.items.select_related("product"):

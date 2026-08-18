@@ -66,7 +66,7 @@ class ProductListView(generics.ListCreateAPIView):
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.filter(is_active=True).select_related(
         "category"
-    ).prefetch_related("images", "reviews")
+    ).prefetch_related("images", "reviews__user")  # ← add __user
     serializer_class = ProductDetailSerializer
     lookup_field = "slug"
 
