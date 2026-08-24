@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { authApi } from "@/api/auth";
+import api from "@/api/client";
 import { useAuthStore } from "@/store/authStore";
 import { User, Lock, Package, MapPin, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -9,7 +10,9 @@ import toast from "react-hot-toast";
 
 export default function AccountPage() {
   const { user, updateUser } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"profile" | "password" | "addresses">("profile");
+  const [activeTab, setActiveTab] = useState<
+    "profile" | "password" | "addresses"
+  >("profile");
   const [saving, setSaving] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
@@ -28,7 +31,7 @@ export default function AccountPage() {
     queryKey: ["addresses"],
     queryFn: () =>
       import("@/api/orders").then((m) =>
-        m.ordersApi.getAddresses().then((r) => r.data)
+        m.ordersApi.getAddresses().then((r) => r.data),
       ),
     enabled: activeTab === "addresses",
   });
@@ -55,9 +58,15 @@ export default function AccountPage() {
     try {
       await authApi.changePassword(passwordForm);
       toast.success("Password changed!");
-      setPasswordForm({ old_password: "", new_password: "", new_password2: "" });
+      setPasswordForm({
+        old_password: "",
+        new_password: "",
+        new_password2: "",
+      });
     } catch (err: any) {
-      toast.error(err.response?.data?.old_password || "Failed to change password");
+      toast.error(
+        err.response?.data?.old_password || "Failed to change password",
+      );
     } finally {
       setSaving(false);
     }
@@ -65,31 +74,23 @@ export default function AccountPage() {
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
     const formData = new FormData();
     formData.append("avatar", file);
 
     try {
-      const res = await fetch("/api/auth/profile/", {
-        method: "PATCH",
+      const { data } = await api.patch("/auth/profile/", formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-        body: formData,
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        toast.error(err.avatar?.[0] || "Upload failed");
-        return;
-      }
-
-      const data = await res.json();
       updateUser(data);
       toast.success("Avatar updated! 🎉");
-    } catch {
-      toast.error("Failed to update avatar");
+    } catch (err: any) {
+      toast.error(err.response?.data?.avatar?.[0] || "Failed to update avatar");
     }
   };
 
@@ -166,7 +167,6 @@ export default function AccountPage() {
 
         {/* Main Content */}
         <div className="md:col-span-3">
-
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="bg-white rounded-lg shadow p-6">
@@ -182,7 +182,10 @@ export default function AccountPage() {
                     <input
                       value={profileForm.first_name}
                       onChange={(e) =>
-                        setProfileForm({ ...profileForm, first_name: e.target.value })
+                        setProfileForm({
+                          ...profileForm,
+                          first_name: e.target.value,
+                        })
                       }
                       className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400"
                     />
@@ -194,7 +197,10 @@ export default function AccountPage() {
                     <input
                       value={profileForm.last_name}
                       onChange={(e) =>
-                        setProfileForm({ ...profileForm, last_name: e.target.value })
+                        setProfileForm({
+                          ...profileForm,
+                          last_name: e.target.value,
+                        })
                       }
                       className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400"
                     />
@@ -252,7 +258,10 @@ export default function AccountPage() {
                     type="password"
                     value={passwordForm.old_password}
                     onChange={(e) =>
-                      setPasswordForm({ ...passwordForm, old_password: e.target.value })
+                      setPasswordForm({
+                        ...passwordForm,
+                        old_password: e.target.value,
+                      })
                     }
                     className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -265,7 +274,10 @@ export default function AccountPage() {
                     type="password"
                     value={passwordForm.new_password}
                     onChange={(e) =>
-                      setPasswordForm({ ...passwordForm, new_password: e.target.value })
+                      setPasswordForm({
+                        ...passwordForm,
+                        new_password: e.target.value,
+                      })
                     }
                     className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -278,7 +290,10 @@ export default function AccountPage() {
                     type="password"
                     value={passwordForm.new_password2}
                     onChange={(e) =>
-                      setPasswordForm({ ...passwordForm, new_password2: e.target.value })
+                      setPasswordForm({
+                        ...passwordForm,
+                        new_password2: e.target.value,
+                      })
                     }
                     className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -304,7 +319,9 @@ export default function AccountPage() {
                 <div className="text-center py-10 text-gray-500">
                   <MapPin size={40} className="mx-auto mb-3 text-gray-300" />
                   <p>No addresses saved yet.</p>
-                  <p className="text-sm mt-1">Add an address during checkout.</p>
+                  <p className="text-sm mt-1">
+                    Add an address during checkout.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3">
