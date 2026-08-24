@@ -144,14 +144,16 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-
 # ── CORS ──────────────────────────────────────────────────────────────────────
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = get_env(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-).split(",")
+
+CORS_ALLOWED_ORIGINS = [
+    "https://jumiaclone-chi.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://jumiaclone-chi.vercel.app",
     "https://jumiaclone-production.up.railway.app",
 ]
 
