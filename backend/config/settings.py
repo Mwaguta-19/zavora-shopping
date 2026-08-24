@@ -151,6 +151,11 @@ CORS_ALLOWED_ORIGINS = get_env(
     "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
 ).split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://jumiaclone-production.up.railway.app",
+]
+
+
 # ── Static & Media ────────────────────────────────────────────────────────────
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
