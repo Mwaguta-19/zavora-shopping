@@ -4,10 +4,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Attach access token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
 
@@ -18,7 +19,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Refresh token on 401
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
