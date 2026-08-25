@@ -3,23 +3,9 @@ from datetime import timedelta
 import os
 import stripe
 
-# Cloudinary
-import cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': get_env('CLOUDINARY_CLOUD_NAME', ''),
-    'API_KEY': get_env('CLOUDINARY_API_KEY', ''),
-    'API_SECRET': get_env('CLOUDINARY_API_SECRET', ''),
-}
-
-# Use Cloudinary for media files in production
-if get_env('CLOUDINARY_CLOUD_NAME'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Read .env file manually ──────────────────────────────────────────────────
+# ── get_env MUST be defined first ────────────────────────────────────────────
 def get_env(key, default=None):
     return os.environ.get(key, default)
 
@@ -45,21 +31,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Third-party
+    "cloudinary_storage",
+    "cloudinary",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "django_filters",
     "storages",
-    # Local apps
     "apps.accounts",
     "apps.products",
     "apps.orders",
     "apps.payments",
     "apps.notifications",
-    'cloudinary_storage',
-    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -92,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-# ── Database ─────────────────────────────────────────────────────────────────
+# ── Database ──────────────────────────────────────────────────────────────────
 DATABASE_URL = get_env("DATABASE_URL", "")
 
 if DATABASE_URL and DATABASE_URL.startswith("postgres"):
@@ -160,15 +144,14 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOW_ALL_ORIGINS = False
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://jumiaclone-chi.vercel.app",
 ]
-
 CSRF_TRUSTED_ORIGINS = [
     "https://jumiaclone-chi.vercel.app",
 ]
@@ -179,6 +162,18 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ── Cloudinary ────────────────────────────────────────────────────────────────
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': get_env('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': get_env('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': get_env('CLOUDINARY_API_SECRET', ''),
+}
+
+if get_env('CLOUDINARY_CLOUD_NAME'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # ── Stripe ────────────────────────────────────────────────────────────────────
 STRIPE_PUBLIC_KEY = get_env("STRIPE_PUBLIC_KEY", "")
