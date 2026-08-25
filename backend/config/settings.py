@@ -3,6 +3,20 @@ from datetime import timedelta
 import os
 import stripe
 
+# Cloudinary
+import cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': get_env('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': get_env('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': get_env('CLOUDINARY_API_SECRET', ''),
+}
+
+# Use Cloudinary for media files in production
+if get_env('CLOUDINARY_CLOUD_NAME'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Read .env file manually ──────────────────────────────────────────────────
@@ -44,6 +58,8 @@ INSTALLED_APPS = [
     "apps.orders",
     "apps.payments",
     "apps.notifications",
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
