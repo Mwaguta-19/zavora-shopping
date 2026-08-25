@@ -63,7 +63,7 @@ export default function AccountPage() {
       updateUser(data);
       toast.success("Avatar updated! 🎉");
     } catch (err: any) {
-      console.error("Avatar upload error:", err.response?.data);
+      console.error("Avatar upload error:", err.response?.data || err);
 
       toast.error(
         err.response?.data?.avatar?.[0] ||
@@ -78,6 +78,12 @@ export default function AccountPage() {
     { key: "password", label: "Password", icon: Lock },
     { key: "addresses", label: "Addresses", icon: MapPin },
   ] as const;
+
+  function handlePasswordChange(
+    event: MouseEvent<HTMLButtonElement, MouseEvent>,
+  ): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
