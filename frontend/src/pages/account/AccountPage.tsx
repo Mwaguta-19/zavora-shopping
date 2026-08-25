@@ -49,48 +49,27 @@ export default function AccountPage() {
     }
   };
 
-  const handlePasswordChange = async () => {
-    if (passwordForm.new_password !== passwordForm.new_password2) {
-      toast.error("Passwords do not match");
-      return;
-    }
-    setSaving(true);
-    try {
-      await authApi.changePassword(passwordForm);
-      toast.success("Password changed!");
-      setPasswordForm({
-        old_password: "",
-        new_password: "",
-        new_password2: "",
-      });
-    } catch (err: any) {
-      toast.error(
-        err.response?.data?.old_password || "Failed to change password",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("avatar", file);
+    formData.append("avatar", file, file.name);
 
     try {
-      const { data } = await api.patch("/auth/profile/", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+      const { data } = await api.patch("/auth/profile/", formData);
 
       updateUser(data);
       toast.success("Avatar updated! 🎉");
     } catch (err: any) {
-      toast.error(err.response?.data?.avatar?.[0] || "Failed to update avatar");
+      console.error("Avatar upload error:", err.response?.data);
+
+      toast.error(
+        err.response?.data?.avatar?.[0] ||
+          err.response?.data?.detail ||
+          "Failed to update avatar",
+      );
     }
   };
 
