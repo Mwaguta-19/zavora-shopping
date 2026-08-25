@@ -7,10 +7,8 @@ const API_BASE_URL =
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
+
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
