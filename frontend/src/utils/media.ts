@@ -5,7 +5,7 @@ export function mediaUrl(url: string | null | undefined): string {
   if (url.includes("cloudinary.com")) return url;
   
   // If Railway URL — use as is
-  if (url.includes("railway.app")) return url;
+  if (url.includes("https://jumiaclone-production.up.railway.app")) return url;
   
   // If local development — strip domain
   if (url.includes("127.0.0.1:8000")) {
