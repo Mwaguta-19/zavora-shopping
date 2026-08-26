@@ -8,7 +8,8 @@ import { mediaUrl } from "@/utils/media";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { setCart } = useCartStore();
-  const primaryImage = product.images?.find((i) => i.is_primary) || product.images?.[0];
+  const primaryImage =
+    product.images?.find((i) => i.is_primary) || product.images?.[0];
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
