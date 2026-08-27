@@ -31,7 +31,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for listing products."""
-    primary_image = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
     category_name = serializers.ReadOnlyField(source="category.name")
     discount_percentage = serializers.ReadOnlyField()
     in_stock = serializers.ReadOnlyField()
