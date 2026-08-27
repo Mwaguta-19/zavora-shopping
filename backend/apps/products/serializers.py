@@ -30,9 +30,9 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for listing products."""
-    images = serializers.SerializerMethodField()
-    category_name = serializers.ReadOnlyField(source="category.name")
+    """Serializer for product listings."""
+    images = ProductImageSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
     discount_percentage = serializers.ReadOnlyField()
     in_stock = serializers.ReadOnlyField()
     effective_price = serializers.ReadOnlyField()
@@ -40,16 +40,19 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            "id", "name", "slug", "price", "discount_price",
-            "effective_price", "discount_percentage", "in_stock",
-            "brand", "category_name", "images", "is_featured",
+            "id",
+            "name",
+            "slug",
+            "price",
+            "discount_price",
+            "effective_price",
+            "discount_percentage",
+            "in_stock",
+            "brand",
+            "category",
+            "images",
+            "is_featured",
         ]
-
-    def get_primary_image(self, obj):
-        image = obj.images.filter(is_primary=True).first() or obj.images.first()
-        if image:
-            return ProductImageSerializer(image).data
-        return None
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
