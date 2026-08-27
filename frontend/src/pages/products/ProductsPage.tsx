@@ -17,25 +17,36 @@ export default function ProductsPage() {
   const page = parseInt(searchParams.get("page") || "1");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", search, category, minPrice, maxPrice, ordering, page],
+    queryKey: [
+      "products",
+      search,
+      category,
+      minPrice,
+      maxPrice,
+      ordering,
+      page,
+    ],
     queryFn: () =>
-      productsApi.getProducts({
-        search: search || undefined,
-        category: category ? parseInt(category) : undefined,
-        min_price: minPrice ? parseFloat(minPrice) : undefined,
-        max_price: maxPrice ? parseFloat(maxPrice) : undefined,
-        ordering,
-        page,
-      }).then((r) => r.data),
+      productsApi
+        .getProducts({
+          search: search || undefined,
+          category: category ? parseInt(category) : undefined,
+          min_price: minPrice ? parseFloat(minPrice) : undefined,
+          max_price: maxPrice ? parseFloat(maxPrice) : undefined,
+          ordering,
+          page,
+        })
+        .then((r) => r.data),
   });
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => productsApi.getCategories().then((r) =>{
-    const data = r.data as any;
-    return Array.isArray(data) ? data : (data.results ?? []);
-  }),
-});
+    queryFn: () =>
+      productsApi.getCategories().then((r) => {
+        const data = r.data as any;
+        return Array.isArray(data) ? data : (data.results ?? []);
+      }),
+  });
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -72,7 +83,9 @@ export default function ProductsPage() {
 
       <div className="flex gap-6">
         {/* Sidebar Filters */}
-        <aside className={`w-56 shrink-0 ${showFilters ? "block" : "hidden"} md:block`}>
+        <aside
+          className={`w-56 shrink-0 ${showFilters ? "block" : "hidden"} md:block`}
+        >
           <div className="bg-white rounded-lg shadow p-4 space-y-5 sticky top-20">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-gray-800">Filters</h3>
@@ -80,18 +93,22 @@ export default function ProductsPage() {
                 onClick={clearFilters}
                 className="text-xs text-orange-500 hover:underline flex items-center gap-1"
               >
-                <X size={12} /> Clear
+                <X size={10} /> Clear
               </button>
             </div>
 
             {/* Categories */}
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Category</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Category
+              </h4>
               <div className="space-y-1">
                 <button
                   onClick={() => updateParam("category", "")}
                   className={`block w-full text-left text-sm px-2 py-1 rounded ${
-                    !category ? "bg-orange-100 text-orange-600 font-medium" : "hover:bg-gray-50"
+                    !category
+                      ? "bg-orange-100 text-orange-600 font-medium"
+                      : "hover:bg-gray-50"
                   }`}
                 >
                   All
@@ -114,7 +131,9 @@ export default function ProductsPage() {
 
             {/* Price Range */}
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Price Range</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Price Range
+              </h4>
               <div className="flex gap-2">
                 <input
                   type="number"
@@ -135,7 +154,9 @@ export default function ProductsPage() {
 
             {/* Sort */}
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Sort By</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Sort By
+              </h4>
               <select
                 value={ordering}
                 onChange={(e) => updateParam("ordering", e.target.value)}
@@ -156,7 +177,10 @@ export default function ProductsPage() {
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white rounded-lg shadow animate-pulse"
+                >
                   <div className="aspect-square bg-gray-200 rounded-t-lg" />
                   <div className="p-3 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-3/4" />
