@@ -6,16 +6,23 @@ import { useAuthStore } from "@/store/authStore";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const { register, handleSubmit } = useForm<{ email: string; password: string }>();
+  const { register, handleSubmit } = useForm<{
+    email: string;
+    password: string;
+  }>();
+
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true);
+
     try {
       const res = await authApi.login(data);
+
       setAuth(res.data.user, res.data.access, res.data.refresh);
+
       toast.success("Welcome back!");
       navigate("/");
     } catch {
@@ -33,8 +40,12 @@ export default function LoginPage() {
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+
             <input
               {...register("email", { required: true })}
               type="email"
@@ -42,8 +53,22 @@ export default function LoginPage() {
               placeholder="you@example.com"
             />
           </div>
+
+          {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+
+              <Link
+                to="/forgot-password"
+                className="text-sm text-orange-500 hover:text-orange-600 hover:underline font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <input
               {...register("password", { required: true })}
               type="password"
@@ -51,6 +76,8 @@ export default function LoginPage() {
               placeholder="••••••••"
             />
           </div>
+
+          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -60,9 +87,13 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Register Link */}
         <p className="text-center text-sm text-gray-600 mt-4">
           Don't have an account?{" "}
-          <Link to="/register" className="text-orange-500 font-semibold hover:underline">
+          <Link
+            to="/register"
+            className="text-orange-500 font-semibold hover:underline"
+          >
             Register
           </Link>
         </p>

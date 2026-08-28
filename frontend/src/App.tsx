@@ -13,6 +13,8 @@ import CheckoutPage from "@/pages/orders/CheckoutPage";
 import OrdersPage from "@/pages/orders/OrdersPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 import AccountPage from "@/pages/account/AccountPage";
+import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,6 +78,11 @@ export default function App() {
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/reset-password/:uid/:token"
+            element={<ResetPasswordPage />}
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
