@@ -212,18 +212,33 @@ SIMPLE_JWT = {
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
+
 CORS_ALLOW_ALL_ORIGINS = False
 
+cors_origins = get_env("CORS_ALLOWED_ORIGINS", "")
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://jumiaclone-chi.vercel.app",
-    
+    origin.strip()
+    for origin in cors_origins.split(",")
+    if origin.strip()
 ]
 
+# Local development
+CORS_ALLOWED_ORIGINS += [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+# ── CSRF ──────────────────────────────────────────────────────────────────────
+
 CSRF_TRUSTED_ORIGINS = [
-    "https://jumiaclone-chi.vercel.app",
-    "https://jumiaclone-production.up.railway.app",
+    "https://jumia-clone.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 
