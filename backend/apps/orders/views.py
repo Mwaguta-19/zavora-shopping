@@ -10,7 +10,6 @@ from .models import (
     Cart,
     Order,
     OrderItem,
-    Product,
 )
 
 from .serializers import (
@@ -19,6 +18,7 @@ from .serializers import (
     OrderSerializer,
 )
 
+from apps.products.models import Product
 from apps.notifications.email import send_order_confirmation
 from apps.notifications.sms import send_order_sms
 
