@@ -284,66 +284,35 @@ STRIPE_WEBHOOK_SECRET = get_env(
 if STRIPE_SECRET_KEY:
     stripe.api_key = STRIPE_SECRET_KEY
 
+# ── Email / SendGrid ──────────────────────────────────────────────────────────
 
-# ── Email ─────────────────────────────────────────────────────────────────────
-# Email configuration
-if get_env("EMAIL_HOST_PASSWORD"):
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = get_env("EMAIL_HOST", "smtp.sendgrid.net")
-    EMAIL_PORT = int(get_env("EMAIL_PORT", "587"))
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = get_env("EMAIL_HOST_USER", "apikey")
-    EMAIL_HOST_PASSWORD = get_env("EMAIL_HOST_PASSWORD")
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = get_env("SENDGRID_API_KEY", "")
 
 DEFAULT_FROM_EMAIL = get_env(
     "DEFAULT_FROM_EMAIL",
     "mwatsenzemwaguta14@gmail.com",
 )
 
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+
 FRONTEND_URL = get_env(
     "FRONTEND_URL",
     "http://localhost:5173",
 )
 
-# Africa's Talking SMS
+
+# ── Africa's Talking SMS ──────────────────────────────────────────────────────
+
 AT_USERNAME = get_env("AT_USERNAME", "sandbox")
 AT_API_KEY = get_env("AT_API_KEY", "")
-
-
-# ── Authentication Password Validators ────────────────────────────────────────
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation."
-            "UserAttributeSimilarityValidator"
-        ),
-    },
-
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation."
-            "MinimumLengthValidator"
-        ),
-    },
-
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation."
-            "CommonPasswordValidator"
-        ),
-    },
-
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation."
-            "NumericPasswordValidator"
-        ),
-    },
-]
-
 
 # ── Miscellaneous ─────────────────────────────────────────────────────────────
 
