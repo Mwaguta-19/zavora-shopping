@@ -289,8 +289,10 @@ if STRIPE_SECRET_KEY:
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 587
+EMAIL_PORT = 2525
 EMAIL_USE_TLS = True
+
+EMAIL_TIMEOUT = 20
 
 EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = get_env("SENDGRID_API_KEY", "")
@@ -299,15 +301,6 @@ DEFAULT_FROM_EMAIL = get_env(
     "DEFAULT_FROM_EMAIL",
     "mwatsenzemwaguta14@gmail.com",
 )
-
-
-# ── Frontend ──────────────────────────────────────────────────────────────────
-
-FRONTEND_URL = get_env(
-    "FRONTEND_URL",
-    "http://localhost:5173",
-)
-
 
 # ── Africa's Talking SMS ──────────────────────────────────────────────────────
 
