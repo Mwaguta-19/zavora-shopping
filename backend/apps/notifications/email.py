@@ -1,5 +1,59 @@
+import os
+
 from django.conf import settings
-from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
+def send_sendgrid_email(
+    to_email,
+    subject,
+    text_content,
+    html_content=None,
+):
+    """
+    Send an email through the SendGrid Web API.
+    """
+
+    api_key = os.getenv("SENDGRID_API_KEY")
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    if not api_key:
+        raise RuntimeError(
+            "SENDGRID_API_KEY is not configured."
+        )
+
+    if not from_email:
+        raise RuntimeError(
+            "DEFAULT_FROM_EMAIL is not configured."
+        )
+
+    message = Mail(
+        from_email=from_email,
+        to_emails=to_email,
+        subject=subject,
+        plain_text_content=text_content,
+    )
+
+    if html_content:
+        message.add_content(
+            html_content,
+            "text/html",
+        )
+
+    client = SendGridAPIClient(api_key)
+
+    response = client.send(message)
+
+    if response.status_code not in (200, 201, 202):
+        raise RuntimeError(
+            f"SendGrid error: "
+            f"{response.status_code} - {response.body}"
+        )
+
+    return response
 
 
 def send_order_confirmation(order):
@@ -12,17 +66,40 @@ def send_order_confirmation(order):
     if not user.email:
         return
 
-    send_mail(
-        subject=f"Order #{order.id} Confirmation",
-        message=(
-            f"Hi {user.get_full_name() or user.username},\n\n"
-            f"Thank you for your order!\n\n"
-            f"Order ID: #{order.id}\n"
-            f"Total: {order.total}\n\n"
-            "We have received your order and will process it shortly.\n\n"
-            "Thank you for shopping with us."
-        ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        fail_silently=False,
+    items = order.items.all()
+
+    context = {
+        "user_name": user.full_name or user.email,
+        "order_number": order.order_number,
+        "status": order.get_status_display(),
+        "order_date": order.created_at.strftime("%B %d, %Y"),
+        "items": items,
+        "total": order.total,
+        "shipping_name": order.shipping_full_name,
+        "shipping_address": order.shipping_address_line1,
+        "shipping_city": order.shipping_city,
+        "shipping_country": order.shipping_country,
+        "frontend_url": settings.FRONTEND_URL,
+    }
+
+    html_content = render_to_string(
+        "notifications/order_confirmed.html",
+        context,
+    )
+
+    text_content = f"""
+Hi {context['user_name']},
+
+Your order {order.order_number} has been confirmed!
+
+Total: ${order.total}
+
+Thank you for shopping with Jumia Clone.
+"""
+
+    return send_sendgrid_email(
+        to_email=user.email,
+        subject=f"Order Confirmed — {order.order_number}",
+        text_content=text_content,
+        html_content=html_content,
     )

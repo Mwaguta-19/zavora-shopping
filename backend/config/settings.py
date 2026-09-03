@@ -208,10 +208,7 @@ SIMPLE_JWT = {
 
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-# # =============================================================================
-# CORS
-# =============================================================================
-
+#  CORS # =======================================================================
 CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
@@ -221,7 +218,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
 
 # =============================================================================
 # CSRF
@@ -286,21 +282,31 @@ if STRIPE_SECRET_KEY:
 
 # ── Email / SendGrid ──────────────────────────────────────────────────────────
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 20
+#EMAIL_HOST = "smtp.sendgrid.net"
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = False
+#EMAIL_TIMEOUT = 20
 
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = get_env("SENDGRID_API_KEY", "")
+#EMAIL_HOST_USER = "apikey"
+#EMAIL_HOST_PASSWORD = get_env("SENDGRID_API_KEY", "")
+
+#DEFAULT_FROM_EMAIL = get_env(
+ #   "DEFAULT_FROM_EMAIL",
+ #   "mwatsenzemwaguta14@gmail.com",
+#)
+
+# ── Email / SendGrid ──────────────────────────────────────────────────────────
+
+SENDGRID_API_KEY = get_env("SENDGRID_API_KEY", "")
 
 DEFAULT_FROM_EMAIL = get_env(
     "DEFAULT_FROM_EMAIL",
     "mwatsenzemwaguta14@gmail.com",
 )
+
 
 # ── Africa's Talking SMS ──────────────────────────────────────────────────────
 
