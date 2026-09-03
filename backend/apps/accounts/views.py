@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import (
     urlsafe_base64_encode,
@@ -11,15 +12,15 @@ from django.utils.encoding import (
     force_bytes,
     force_str,
 )
-from apps.notifications.email import (
-send_sendgrid_email,
-send_welcome_email,
-)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from apps.notifications.email import (
+    send_sendgrid_email,
+)
 
 from .serializers import (
     ChangePasswordSerializer,
@@ -29,8 +30,12 @@ from .serializers import (
     UserSerializer,
 )
 
+import logging
+
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -48,10 +53,14 @@ class RegisterView(generics.CreateAPIView):
 
         user = serializer.save()
 
+        # Send welcome email without breaking registration
         try:
             send_welcome_email(user)
         except Exception:
-            pass
+            logger.exception(
+                "Failed to send welcome email to %s",
+                user.email,
+            )
 
         refresh = RefreshToken.for_user(user)
 
@@ -193,6 +202,19 @@ class ForgotPasswordView(APIView):
                 is_active=True,
             )
 
+        except User.DoesNotExist:
+            # Do not reveal whether an account exists.
+            return Response(
+                {
+                    "detail": (
+                        "If this email exists, "
+                        "a reset link has been sent."
+                    )
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        try:
             # Generate secure password-reset token
             token = default_token_generator.make_token(user)
 
@@ -208,7 +230,7 @@ class ForgotPasswordView(APIView):
             )
 
             # Send password-reset email through SendGrid
-            send_sendgrid_email(
+            response = send_sendgrid_email(
                 to_email=user.email,
                 subject="Reset Your Zavora Password",
                 text_content=f"""
@@ -226,9 +248,29 @@ Zavora Team
 """,
             )
 
-        except User.DoesNotExist:
-            # Do not reveal whether the email exists.
-            pass
+            logger.info(
+                "Password reset email sent to %s. SendGrid status: %s",
+                user.email,
+                response.status_code,
+            )
+
+        except Exception:
+            # IMPORTANT:
+            # Log the actual error on Railway so we can diagnose it.
+            logger.exception(
+                "Failed to send password reset email to %s",
+                user.email,
+            )
+
+            return Response(
+                {
+                    "detail": (
+                        "Unable to send the password reset email "
+                        "at this time. Please try again later."
+                    )
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response(
             {
@@ -239,6 +281,8 @@ Zavora Team
             },
             status=status.HTTP_200_OK,
         )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Reset Password
 # ─────────────────────────────────────────────────────────────────────────────
@@ -341,3 +385,35 @@ class ResetPasswordView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Welcome Email
+# ─────────────────────────────────────────────────────────────────────────────
+
+def send_welcome_email(user):
+    """
+    Send welcome email through SendGrid.
+    """
+
+    if not user.email:
+        return
+
+    return send_sendgrid_email(
+        to_email=user.email,
+        subject="Welcome to Zavora!",
+        text_content=f"""
+Hi {user.first_name or user.email},
+
+Welcome to Zavora!
+
+We're excited to have you.
+
+Start shopping at:
+{settings.FRONTEND_URL}
+
+Happy shopping!
+
+Zavora Team
+""",
+    )
