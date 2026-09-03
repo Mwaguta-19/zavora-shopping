@@ -94,7 +94,7 @@ Your order {order.order_number} has been confirmed!
 
 Total: ${order.total}
 
-Thank you for shopping with Jumia Clone.
+Thank you for shopping with Zavora.
 """
 
     return send_sendgrid_email(

@@ -11,7 +11,10 @@ from django.utils.encoding import (
     force_bytes,
     force_str,
 )
-from django.core.mail import send_mail
+from apps.notifications.email import (
+send_sendgrid_email,
+send_welcome_email,
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -204,13 +207,14 @@ class ForgotPasswordView(APIView):
                 f"/reset-password/{uid}/{token}"
             )
 
-            send_mail(
-                subject="Reset Your Jumia Clone Password",
-
-                message=f"""
+            # Send password-reset email through SendGrid
+            send_sendgrid_email(
+                to_email=user.email,
+                subject="Reset Your Zavora Password",
+                text_content=f"""
 Hi {user.first_name or user.email},
 
-We received a request to reset your Jumia Clone password.
+We received a request to reset your Zavora password.
 
 Click the link below to reset your password:
 
@@ -218,16 +222,8 @@ Click the link below to reset your password:
 
 If you did not request this password reset, you can safely ignore this email.
 
-Jumia Clone Team
+Zavora Team
 """,
-
-                from_email=settings.DEFAULT_FROM_EMAIL,
-
-                recipient_list=[
-                    user.email
-                ],
-
-                fail_silently=False,
             )
 
         except User.DoesNotExist:
@@ -243,8 +239,6 @@ Jumia Clone Team
             },
             status=status.HTTP_200_OK,
         )
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Reset Password
 # ─────────────────────────────────────────────────────────────────────────────
