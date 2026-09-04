@@ -54,7 +54,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold shrink-0">
-            Jumia<span className="text-yellow-300">Clone</span>
+            Zavora<span className="text-yellow-300">Kenya</span>
           </Link>
 
           {/* Search */}
