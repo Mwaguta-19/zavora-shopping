@@ -15,6 +15,12 @@ import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 import AccountPage from "@/pages/account/AccountPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
+import AdminLayout from "@/components/layout/AdminLayout";
+import AdminRoute from "@/components/ui/AdminRoute";
+import DashboardPage from "@/pages/admin/DashboardPage";
+import AdminProductsPage from "@/pages/admin/ProductsPage";
+import AdminCategoriesPage from "@/pages/admin/CategoriesPage";
+import AdminOrdersPage from "@/pages/admin/OrdersPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +89,19 @@ export default function App() {
             path="/reset-password/:uid/:token"
             element={<ResetPasswordPage />}
           />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

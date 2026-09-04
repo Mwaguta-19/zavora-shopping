@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as django_filters
 from .models import Category, Product, ProductReview
+from apps.orders.models import Order
+from apps.accounts.models import User
 from .serializers import (
     CategorySerializer,
     ProductListSerializer,
@@ -92,3 +94,60 @@ class ProductReviewView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         product = Product.objects.get(slug=self.kwargs["slug"])
         serializer.save(user=self.request.user, product=product)
+
+class AdminProductListView(generics.ListCreateAPIView):
+    queryset = Product.objects.all().select_related("category").prefetch_related("images")
+    serializer_class = ProductDetailSerializer
+    permission_classes = [permissions.IsAdminUser]
+    pagination_class = None
+
+class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductDetailSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class AdminProductImageView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+        images = request.FILES.getlist("images")
+        created = []
+        for img in images:
+            image = ProductImage.objects.create(
+                product=product,
+                image=img,
+                is_primary=not product.images.exists()
+            )
+            created.append(ProductImageSerializer(image).data)
+        return Response(created, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, product_id, image_id):
+        image = get_object_or_404(ProductImage, id=image_id, product_id=product_id)
+        image.delete()
+        return Response({"detail": "Image deleted."})
+
+class AdminStatsView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        from django.db.models import Sum
+        return Response({
+            "total_products": Product.objects.count(),
+            "total_orders": Order.objects.count(),
+            "total_users": User.objects.count(),
+            "total_revenue": Order.objects.filter(
+                payment_status="paid"
+            ).aggregate(Sum("total"))["total__sum"] or 0,
+            "pending_orders": Order.objects.filter(status="pending").count(),
+            "recent_orders": [
+                {
+                    "order_number": o.order_number,
+                    "total": str(o.total),
+                    "status": o.status,
+                    "created_at": o.created_at.strftime("%Y-%m-%d"),
+                }
+                for o in Order.objects.order_by("-created_at")[:5]
+            ],
+        })

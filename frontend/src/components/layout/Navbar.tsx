@@ -16,7 +16,8 @@ export default function Navbar() {
   // Load cart on login
   useEffect(() => {
     if (isAuthenticated) {
-      cartApi.getCart()
+      cartApi
+        .getCart()
         .then(({ data }) => setCart(data))
         .catch(() => {});
     }
@@ -51,7 +52,6 @@ export default function Navbar() {
     <nav className="bg-orange-500 text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center gap-4">
-
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold shrink-0">
             Jumia<span className="text-yellow-300">Clone</span>
@@ -76,7 +76,6 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-4 shrink-0">
-
             {/* Cart */}
             <Link to="/cart" className="relative">
               <ShoppingCart size={24} />
@@ -90,7 +89,6 @@ export default function Navbar() {
             {/* Account */}
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
-
                 {/* Toggle Button */}
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -133,6 +131,15 @@ export default function Navbar() {
                       <ShoppingCart size={14} />
                       My Orders
                     </Link>
+                    {user?.is_staff && (
+                      <Link
+                        to="/admin-dashboard"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 hover:bg-orange-50 text-sm border-b text-orange-600 font-medium"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2 px-4 py-3 hover:bg-red-50 text-red-500 text-sm transition-colors"
