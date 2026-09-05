@@ -248,10 +248,15 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Cloudinary credentials come from Railway environment variables.
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ["CLOUDINARY_CLOUD_NAME"],
-    "API_KEY": os.environ["CLOUDINARY_API_KEY"],
-    "API_SECRET": os.environ["CLOUDINARY_API_SECRET"],
+    'CLOUD_NAME': get_env('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': get_env('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': get_env('CLOUDINARY_API_SECRET', ''),
 }
+
+if get_env('CLOUDINARY_CLOUD_NAME'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
 # Django 4.2+ storage configuration
