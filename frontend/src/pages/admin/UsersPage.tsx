@@ -25,7 +25,11 @@ export default function UsersPage() {
 
       const response = await authApi.getAdminUsers();
 
-      setUsers(response.data);
+      setUsers(
+        Array.isArray(response.data)
+          ? response.data
+          : (response.data.results ?? []),
+      );
     } catch (error: any) {
       console.error("Failed to load users:", error);
 

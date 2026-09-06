@@ -27,7 +27,12 @@ export const authApi = {
 
   // Admin
   getAdminUsers: () =>
-    api.get<User[]>("/auth/admin/users/"),
+  api.get<{
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: User[];
+  }>("/auth/admin/users/"),
 
   updateAdminUser: (id: string, data: Partial<User>) =>
     api.patch<User>(`/auth/admin/users/${id}/`, data),
