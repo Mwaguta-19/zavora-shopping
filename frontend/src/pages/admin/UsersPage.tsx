@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { authApi } from "@/api/authApi";
+import { authApi } from "@/api/auth";
 import type { User } from "@/types";
 
 export default function UsersPage() {

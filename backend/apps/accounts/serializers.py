@@ -49,6 +49,38 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser", "created_at"]
 
 
+class AdminUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.ReadOnlyField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "phone",
+            "avatar",
+            "is_verified",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "email",
+            "full_name",
+            "avatar",
+            "is_verified",
+            "is_staff",
+            "is_superuser",
+            "created_at",
+        ]
+
+
+
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
