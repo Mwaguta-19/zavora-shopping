@@ -2,7 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import (
     urlsafe_base64_encode,
@@ -28,6 +28,7 @@ from .serializers import (
     RegisterSerializer,
     UpdateProfileSerializer,
     UserSerializer,
+    AdminUserSerializer,
 )
 
 import logging
@@ -417,3 +418,28 @@ Happy shopping!
 Zavora Team
 """,
     )
+
+class AdminUserListView(generics.ListAPIView):
+    """
+    Return all users for the admin dashboard.
+    Only staff/superusers can access this endpoint.
+    """
+
+    serializer_class = AdminUserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return User.objects.all().order_by("-created_at")
+
+
+class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a user from the admin dashboard.
+    Only staff/superusers can access this endpoint.
+    """
+
+    serializer_class = AdminUserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return User.objects.all()

@@ -24,4 +24,14 @@ export const authApi = {
     new_password: string;
     new_password2: string;
   }) => api.post("/auth/change-password/", data),
+
+  // Admin
+  getAdminUsers: () =>
+    api.get<User[]>("/auth/admin/users/"),
+
+  updateAdminUser: (id: string, data: Partial<User>) =>
+    api.patch<User>(`/auth/admin/users/${id}/`, data),
+
+  deleteAdminUser: (id: string) =>
+    api.delete(`/auth/admin/users/${id}/`),
 };

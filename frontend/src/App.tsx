@@ -21,6 +21,7 @@ import DashboardPage from "@/pages/admin/DashboardPage";
 import AdminProductsPage from "@/pages/admin/ProductsPage";
 import AdminCategoriesPage from "@/pages/admin/CategoriesPage";
 import AdminOrdersPage from "@/pages/admin/OrdersPage";
+import UsersPage from "@/pages/admin/UsersPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,6 +102,7 @@ export default function App() {
             <Route path="products" element={<AdminProductsPage />} />
             <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="users" element={<UsersPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
