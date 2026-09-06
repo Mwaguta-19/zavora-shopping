@@ -33,9 +33,7 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white flex flex-col">
         <div className="p-6 border-b border-gray-700">
-          <h1 className="text-xl font-bold text-orange-400">
-            Jumia Clone Admin
-          </h1>
+          <h1 className="text-xl font-bold text-orange-400">Zavora Shopping</h1>
           <p className="text-xs text-gray-400 mt-1">Management Dashboard</p>
         </div>
 
