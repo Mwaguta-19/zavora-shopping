@@ -31,6 +31,8 @@ from .serializers import (
     AdminUserSerializer,
 )
 
+from .permissions import IsSuperAdmin
+
 import logging
 
 
@@ -426,7 +428,7 @@ class AdminUserListView(generics.ListAPIView):
     """
 
     serializer_class = AdminUserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
     def get_queryset(self):
         return User.objects.all().order_by("-created_at")
@@ -434,12 +436,41 @@ class AdminUserListView(generics.ListAPIView):
 
 class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    Retrieve, update or delete a user from the admin dashboard.
-    Only staff/superusers can access this endpoint.
-    """
+    Retrieve, update or delete a user.
 
+    Only Super Admins can access this endpoint.
+    Super Admin accounts are protected from modification/deletion.
+    """
     serializer_class = AdminUserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
     def get_queryset(self):
         return User.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        # Protect Super Admin accounts
+        if user.is_superuser:
+            return Response(
+                {
+                    "detail": "Super Admin accounts cannot be modified."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        # Protect Super Admin accounts
+        if user.is_superuser:
+            return Response(
+                {
+                    "detail": "Super Admin accounts cannot be deleted."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().destroy(request, *args, **kwargs)

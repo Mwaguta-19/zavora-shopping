@@ -12,13 +12,14 @@ import toast from "react-hot-toast";
 
 import { authApi } from "@/api/auth";
 import type { User } from "@/types";
+import { useAuthStore } from "@/store/authStore";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-
+  const { user: currentUser } = useAuthStore();
   const loadUsers = async () => {
     try {
       setLoading(true);
@@ -60,6 +61,36 @@ export default function UsersPage() {
       );
     });
   }, [users, search]);
+
+  const toggleStaffRole = async (user: User) => {
+    try {
+      setActionLoading(user.id);
+
+      const response = await authApi.updateAdminUser(user.id, {
+        is_staff: !user.is_staff,
+      });
+
+      setUsers((currentUsers) =>
+        currentUsers.map((item) =>
+          item.id === user.id ? response.data : item,
+        ),
+      );
+
+      toast.success(
+        response.data.is_staff
+          ? "User promoted to Staff successfully."
+          : "Staff role removed successfully.",
+      );
+    } catch (error: any) {
+      console.error("Failed to update staff role:", error);
+
+      toast.error(
+        error?.response?.data?.detail || "Failed to update staff role.",
+      );
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const toggleUserStatus = async (user: User) => {
     try {
@@ -273,6 +304,17 @@ export default function UsersPage() {
 
                       <td className="px-6 py-4">
                         <div className="flex justify-end gap-2">
+                          {!user.is_superuser &&
+                            currentUser?.id !== user.id && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => toggleStaffRole(user)}
+                                className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {user.is_staff ? "Remove Staff" : "Make Staff"}
+                              </button>
+                            )}
                           <button
                             type="button"
                             disabled={busy || user.is_superuser}
@@ -356,18 +398,26 @@ export default function UsersPage() {
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <button
-                      type="button"
-                      disabled={busy || user.is_superuser}
-                      onClick={() => toggleUserStatus(user)}
-                      className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium disabled:opacity-50"
-                    >
-                      {user.is_active ? "Deactivate" : "Activate"}
-                    </button>
+                    {!user.is_superuser && currentUser?.id !== user.id && (
+                      <button
+                        type="button"
+                        disabled={
+                          busy ||
+                          user.is_superuser ||
+                          currentUser?.id === user.id
+                        }
+                        onClick={() => toggleStaffRole(user)}
+                        className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                      >
+                        {user.is_staff ? "Remove Staff" : "Make Staff"}
+                      </button>
+                    )}
 
                     <button
                       type="button"
-                      disabled={busy || user.is_superuser}
+                      disabled={
+                        busy || user.is_superuser || currentUser?.id === user.id
+                      }
                       onClick={() => deleteUser(user)}
                       className="rounded-lg bg-red-50 p-2 text-red-600 disabled:opacity-50"
                     >

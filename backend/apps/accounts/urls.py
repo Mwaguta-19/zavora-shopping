@@ -7,7 +7,6 @@ from .views import (
     LogoutView,
     ProfileView,
     RegisterView,
-    ChangePasswordView,
     ForgotPasswordView,
     ResetPasswordView,
     AdminUserListView,

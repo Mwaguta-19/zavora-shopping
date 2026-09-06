@@ -74,7 +74,6 @@ class AdminUserSerializer(serializers.ModelSerializer):
             "full_name",
             "avatar",
             "is_verified",
-            "is_staff",
             "is_superuser",
             "created_at",
         ]
