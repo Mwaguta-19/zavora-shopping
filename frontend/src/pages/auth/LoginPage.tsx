@@ -65,7 +65,7 @@ export default function LoginPage() {
 
             <p className="mt-2 text-sm text-gray-500">
               Login to your{" "}
-              <span className="font-semibold text-orange-500">Jumia Clone</span>{" "}
+              <span className="font-semibold text-orange-500">Zavora</span>{" "}
               account
             </p>
           </div>
