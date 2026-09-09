@@ -26,7 +26,7 @@ def send_order_sms(order):
         f"Hi {order.user.first_name or 'Customer'}! "
         f"Your order #{order.order_number} has been placed. "
         f"Total: KES {order.total}. "
-        f"Track at: jumiaclone-chi.vercel.app/orders/{order.order_number}"
+        f"Track at: zavora-shopping-mart.vercel.app/{order.order_number}"
     )
     send_sms(order.user.phone, message)
 
