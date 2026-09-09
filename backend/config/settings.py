@@ -154,7 +154,7 @@ if REDIS_URL:
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             },
-            "KEY_PREFIX": "jumia",
+            "KEY_PREFIX": "zavora",
         }
     }
 
