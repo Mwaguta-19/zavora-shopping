@@ -39,6 +39,6 @@ def send_order_shipped_sms(order, tracking=None):
     message = (
         f"Your order #{order.order_number} has been shipped! "
         f"{'Tracking: ' + tracking if tracking else ''} "
-        f"Jumia Clone"
+        f"Zavora shopping mart"
     )
     send_sms(order.user.phone, message)
