@@ -1,4 +1,4 @@
-# Jumia Clone
+# zavora
 
 A production-ready multi-vendor e-commerce platform built with:
 
