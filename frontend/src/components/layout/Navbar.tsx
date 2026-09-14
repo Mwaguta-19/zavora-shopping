@@ -126,7 +126,7 @@ export default function Navbar() {
                     <Link
                       to="/orders"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 hover:bg-gray-50 text-sm border-b transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 hover:bg-gray-50z text-sm border-b transition-colors"
                     >
                       <ShoppingCart size={14} />
                       My Orders

@@ -58,7 +58,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-gray-700 text-center py-4 text-sm">
-        © 2026 Jaynova Systems - Mwaguta org. All rights reserved.
+        © 2026 Jaynova Systems. All rights reserved.
       </div>
     </footer>
   );
